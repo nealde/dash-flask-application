@@ -1,0 +1,2 @@
+title: Visualizations
+static: True
