@@ -46,7 +46,7 @@ $$Solid-phase \; diffusion \;  rate: D_s \; [\frac{m^2}{s}]$$
 
 This equation describes the way that lithium ions diffuse once inside the particles.  This is a partial differential equation - the left hand side is the derivative with respect to time, and the right hand side is the derivative with respect to space.  This particular formulation captures the spherical nature of the particles.
 
-The For this set of equations, which exist in both the positive and negative particle, we need one initial condition for time and two boundary conditions for space.  The initial condition is the initial concentration at all r:  
+For this set of equations, which exist in both the positive and negative particle, we need one initial condition for time and two boundary conditions for space.  The initial condition is the initial concentration at all r:  
 $$c_s[0,r] = c_{s, initial}$$
 
 The boundary conditions are Radial Symmetry at the center and the ions either enter or leave the surface based on the current:
@@ -67,19 +67,21 @@ This set of equations is replicated for each simulated particle, which are treat
 
 #### Electonic Conduction
 
-$$\sigma _{eff, p} \frac{\partial ^2 \Phi_1}{\partial x^2} = a_pFj_p$$ $\Phi_1$ is the solid-phase potential
+$$\sigma _{eff, p} \frac{\partial ^2 \Phi_1}{\partial x^2} = a_pFj_p$$
+
+\(\Phi_1\) is the solid-phase potential
 
 #### Charge Balance
 
 $$-\sigma _{eff, p} \frac{\partial  \Phi_1}{\partial x} -\kappa_{eff, p} \frac{\partial \Phi_2}{\partial x} + \frac{2 \kappa_{eff, p}RT}{F}(1-t_+)\frac{\partial \ln c}{\partial x} = I$$
 
-$\Phi_2$ is the liquid phase potential
+\(\Phi_2\) is the liquid phase potential
 
 #### Material Balance (back to Fick's Law)
 
 $$-\epsilon _{p} \frac{\partial  c}{\partial x} = -D_{eff, p} \frac{\partial ^2 c}{\partial x^2} + a_p(1-t_+)j_p$$
 
-$c$ is the electrolyte concentration
+\(c\) is the electrolyte concentration
 
 #### Other expressions
 
@@ -87,27 +89,36 @@ $c$ is the electrolyte concentration
 
 $$\kappa _{eff,p} = \epsilon_p^{brugg}\kappa = 0.01775(4.1253 E^{-2}+5.007 E^{-1}c-4.7212 E^{-1}c^2 +1.5094 E^{-1}c^3-1.6018 E^{-2}c^4)$$
 
-$\kappa$ is the given reaction rate
+\(\kappa\) is the given reaction rate
 
-$brugg$ is the bruggman coefficient - it captures the tortuosity associated with the pores in the electrode
+\(brugg\) is the bruggman coefficient - it captures the tortuosity associated with the pores in the electrode
 
-$\epsilon$ is the volume fraction of the electrode that is porous
+\(\epsilon\) is the volume fraction of the electrode that is porous
 
 ##### Butler-Volmer Kinetics at Each Electrode
 
 $$j_p = 2\kappa_p(c_{s, max,p}-c^s_p)^{0.5}c^{s0.5}_pc^{0.5}sinh(\frac{0.5F}{RT}(\Phi_1-\Phi_2-U_p))$$
 
-$U_p$ is a fitted relationship between the open-circuit potential and the degree of lithiation of each electrode - this is a material property that is generally measured experimentally.
+\(U_p\) is a fitted relationship between the open-circuit potential and the degree of lithiation of each electrode - this is a material property that is generally measured experimentally.
 
 ### The Path of A Lithium Particle
 
-During charge, the lithium begins in the anode.  An external voltage is applied, and this splits the electron off of the Lithium. The electron is removed from the system by way of electronic conduction through the graphite structure to the current collector, and the Li+ diffuses out of the porous electrode. These relationships are captured by the Fick's Law equation, the Electronic Conduction, the Charge Balance, and the Butler-Volmer Kinetic equations.
+During charge, the lithium begins in the anode.  An external voltage is applied, and this splits the electron off of 
+the Lithium. The electron is removed from the system by way of electronic conduction through the graphite structure 
+to the current collector, and the Li+ diffuses out of the porous electrode. These relationships are captured by the 
+Fick's Law equation, the Electronic Conduction, the Charge Balance, and the Butler-Volmer Kinetic equations.
 
-As the Li+ is generated at the anode and diffuses into the electrolyte, the charge balance of the system changes. These mechanics are captured in the Charge Balance equation, which relies on $c$, the concentration of lithium in the electrolyte, $\kappa_{eff}$, the effective rate of reaction, and $\sigma_{eff}$, the electronic conductivity of the material. Together, this equation couples the diffusion, reaction rate, and electronic conduction equations in order to accurately capture the driving force behind the charge at different points in the electrode.
+As the Li+ is generated at the anode and diffuses into the electrolyte, the charge balance of the system changes. 
+These mechanics are captured in the Charge Balance equation, which relies on \(c\), the concentration of lithium in 
+the electrolyte, \(\kappa_{eff}\), the effective rate of reaction, and \(\sigma_{eff}\), the electronic conductivity
+of the material. Together, this equation couples the diffusion, reaction rate, and electronic conduction equations 
+in order to accurately capture the driving force behind the charge at different points in the electrode.
 
 Once the lithium ion leaves the anode particle, it diffuses through the separator in the electrolyte.
 
-When it reaches the cathode, it is free to combine with another electron and this process happens in reverse - the varying potentials in the solid material and liquid electrolyte drive the local reactions, where Lithium intercalates into the cathodic crystal structure.
+When it reaches the cathode, it is free to combine with another electron and this process happens in reverse - 
+the varying potentials in the solid material and liquid electrolyte drive the local reactions, where Lithium 
+intercalates into the cathodic crystal structure.
 
 ## Implementation
 
