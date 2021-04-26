@@ -123,7 +123,9 @@ def init_page(app):
 
             dict_data['internal_data'] = {
                 'positive': [list(time_slice) for time_slice in pos_conc],
-                'negative': [list(time_slice) for time_slice in neg_conc]
+                'negative': [list(time_slice) for time_slice in neg_conc],
+                'p_x': list(np.linspace(0, 1, pos_electrode + 2)),
+                'n_x': list(np.linspace(0, 1, neg_electrode + 2)),
             }
 
             l = html.Div([
@@ -146,59 +148,48 @@ def init_page(app):
                         figure=neg_internal_fig,
                         style={'width': '50%'}
                     ),
-                ])
+                ]),
             ])
 
             return l, json.dumps(dict_data)
         return None, ''
 
-    # app.clientside_callback(
-    #     """
-    #     function(time, figure, data) {
-    #         // tuple is (dict of new data, target trace index, number of points to keep)
-    #         _data = JSON.parse(data)
-    #         if Object.keys(_data).length != 0 {
-    #           figure['data'][1]['y'] = data[time]
-    #         }
-    #         return figure
-    #     }
-    #     """, Output('spm-voltage-graph', 'figure'), [Input('spm-time', 'value')], [State('spm-voltage-graph', 'figure') ,State('spm-data-div', 'children')]
-    # )
+    app.clientside_callback(
+        """
+        function(time, data) {
+            // tuple is (dict of new data, target trace index, number of points to keep)
+            const _data = JSON.parse(data)['voltage_data']['time'];
+            return [{'x':[[_data[time], _data[time]]], 'y': [[0, 4.2]]}, [1], 2];
+        }
+        """, Output('spm-voltage-graph', 'extendData'), [Input('spm-time', 'value')], [State('spm-data-div', 'children')]
+    )
 
-    @app.callback(Output('spm-voltage-graph', 'figure'),
-                  [Input('spm-time', 'value')],
-                  [State('spm-voltage-graph', 'figure'),
-                   State('spm-data-div', 'children')])
-    def update_voltage_line(time, figure, voltage_data):
-        data = json.loads(voltage_data).get('voltage_data', {}).get('time',[])
-        if data:
-            figure['data'][1]['x'] = [data[time], data[time]]
-        return figure
+    app.clientside_callback(
+        """
+        function(time, data) {
+            // tuple is (dict of new data, target trace index, number of points to keep)
+            const _data = JSON.parse(data);
+            const positive = _data['internal_data']['positive'];
+            const _px = _data['internal_data']['p_x'];
+            return [{'x': [_px], 'y': [positive[time]]}, [1], _px.length];
+        }
+        """, Output('spm-pos-graph', 'extendData'), [Input('spm-time', 'value')],[State('spm-data-div', 'children')]
+    )
 
-    @app.callback(Output('spm-pos-graph', 'figure'),
-                  [Input('spm-time', 'value')],
-                  [State('spm-pos-graph', 'figure'),
-                   State('spm-data-div', 'children')])
-    def update_voltage_line(time, figure, voltage_data):
-        json_data = json.loads(voltage_data)
-        data = json_data.get('internal_data', {}).get('positive', [])
-        if data is not None:
-            figure['data'][1]['y'] = data[time]
-        return figure
-
-    @app.callback(Output('spm-neg-graph', 'figure'),
-                  [Input('spm-time', 'value')],
-                  [State('spm-neg-graph', 'figure'),
-                   State('spm-data-div', 'children')])
-    def update_voltage_line(time, figure, voltage_data):
-        json_data = json.loads(voltage_data)
-        data = json_data.get('internal_data', {}).get('negative', [])
-
-        if data is not None:
-            figure['data'][1]['y'] = data[time]
-        return figure
+    app.clientside_callback(
+        """
+        function(time, data) {
+            // tuple is (dict of new data, target trace index, number of points to keep)
+            const _data = JSON.parse(data);
+            const negative = _data['internal_data']['negative'];
+            const _nx = _data['internal_data']['n_x'];
+            return [{'x': [_nx], 'y': [negative[time]]}, [1], _nx.length];
+        }
+        """, Output('spm-neg-graph', 'extendData'), [Input('spm-time', 'value')], [State('spm-data-div', 'children')]
+    )
 
     return layout
+
 
 def linearly_interpolate_concentrations(time, raw_time, concentrations):
     return np.concatenate([interp1d(raw_time, concentrations[:, i], kind='cubic', bounds_error=False)(time)[:, np.newaxis] for i in range(concentrations.shape[1])], axis=1)
