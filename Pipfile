@@ -33,6 +33,7 @@ setuptools = "*"
 plotly = "*"
 ampere = "==0.5.6"
 gunicorn = "*"
+colour = "*"
 
 [requires]
 python_version = "3.6"
