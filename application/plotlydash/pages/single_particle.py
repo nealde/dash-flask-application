@@ -20,7 +20,7 @@ def init_page(app):
         html.Img(src='/img/spm/spm_3d.png'),
         html.Div([], style={'height': '30px'}),
         html.P('Select a current for the simulation below.'),
-        dcc.Slider(id='spm-current', min=-10, max=10, value=4, step=0.5, updatemode='drag',
+        dcc.Slider(id='spm-current', min=-10, max=10, value=4, step=0.1, updatemode='drag',
                    marks={i: f'{i} amps' for i in range(-10, 12, 2)}),
         html.Div([], style={'height': '30px'}),
         dbc.Button('Run Simulation', id='spm-start-button'),
@@ -35,13 +35,14 @@ def init_page(app):
                   [State('spm-current', 'value')])
     def spm_callback(n_clicks, amps):
         if amps != 0:
-
             spm = SingleParticleFD()
             # run simulation with internal variables
             if amps > 0:
-                data = spm.discharge(current=int(amps), internal=True, trim=True)
+                amps = max(amps, 0.2)
+                data = spm.discharge(current=amps, internal=True, trim=True)
             if amps <= 0:
-                data = spm.charge(current=abs(int(amps)), internal=True, trim=True)
+                amps = min(amps, -0.2)
+                data = spm.charge(current=abs(amps), internal=True, trim=True)
 
             internal_data = data.internal
             raw_times = internal_data[:, 0]
