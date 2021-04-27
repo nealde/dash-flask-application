@@ -211,7 +211,7 @@ def init_page(app):
                     html.P('As current increases, the capacity will decrease due to Li depletion at the surface of the particles relative to total Li concentration.')
                 ]),
                 dcc.Slider(id='spm-time', min=0, max=len(data.time), value=4, step=1, updatemode='drag',
-                           marks={i: f'{int(data.time[i])}s' for i in range(0, len(data.time)+1, 30)}),
+                           marks={i: f'{int(data.time[i])}s' for i in range(0, len(data.time), 30)}),
                 dbc.Row([
                     html.Div([], style={'height': '20px'}),
                     html.P('During discharge, the positive electrode concentration rises. During charge, it falls.'),
