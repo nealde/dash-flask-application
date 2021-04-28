@@ -11,7 +11,7 @@ explaining the solutions via data visualizations, and keeping the results up-to-
 
 I love tinkering, hiking, playing soccer, and traveling!
 
-For some examples of my work, check out the [Visualizations](/dashapp) tab!
+For some examples of my work, check out the [Visualizations](/dashapp) tab or download my [Resume](/img/about/Neal_Dawson_Elli_Resume.pdf)!
 
 Check out the [Blog](/) section for some of my recent work, or [send me a message](/contact)!
 
