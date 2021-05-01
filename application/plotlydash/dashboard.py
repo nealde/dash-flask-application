@@ -10,6 +10,7 @@ from dash.dependencies import Input, Output, State
 
 from .layout import html_layout
 from .pages.single_particle import init_page as single_particle_page
+from .pages.p2d import init_page as p2d_page
 
 base = '/dashapp'
 
@@ -19,6 +20,7 @@ def init_dashboard(server, pages):
     from .pages.app_base import init_app
     dash_app = init_app(server)
     spm_layout = single_particle_page(dash_app)
+    p2d_layout = p2d_page(dash_app)
 
     # Custom HTML layout
     dash_app.index_string = html_layout
@@ -33,6 +35,7 @@ def init_dashboard(server, pages):
                     dbc.DropdownMenuItem(dbc.NavLink("Home Page", href=f'{base}/')),
                     dbc.DropdownMenuItem(divider=True),
                     dbc.DropdownMenuItem(dbc.NavLink("Single Particle Model", href=f'{base}/single-particle')),
+                    dbc.DropdownMenuItem(dbc.NavLink("Pseudo Two-Dimensional Model", href=f'{base}/pseudo-two-dim'))
                 ]
             )
         ],
@@ -65,6 +68,8 @@ def init_dashboard(server, pages):
         print(pathname)
         if pathname == f'{base}/single-particle':
             return spm_layout
+        elif pathname == f'{base}/pseudo-two-dim':
+            return p2d_layout
         else:
             return index_page
     return dash_app.server

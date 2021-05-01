@@ -17,6 +17,8 @@ def init_page(app):
     layout = html.Div([
         html.H1('Single Particle Model'),
         html.Div([], style={'height': '30px'}),
+        html.A('A model walkthrough is available for the Single Particle Model', href='/articles/spm/'),
+        html.Div([], style={'height': '30px'}),
         html.Img(src='/img/spm/spm_3d.png'),
         html.Div([], style={'height': '30px'}),
         html.P('Select a current for the simulation below.'),
@@ -48,8 +50,6 @@ def init_page(app):
             raw_times = internal_data[:, 0]
             delta_time = np.diff(raw_times)
             total_capacity = round(abs(delta_time * internal_data[1:, -1]).sum() / 3600 / 30, 2) # convert from seconds to hours
-            # positive_colorscale = 'darkmint'
-            # negative_colorscale = 'brug'
 
             start_color = "#b2d8ff"  # light blue
             end_color = "#00264c"  # dark blue
@@ -215,7 +215,8 @@ def init_page(app):
                            marks={i: f'{int(data.time[i])}s' for i in range(0, len(data.time), 30)}),
                 dbc.Row([
                     html.Div([], style={'height': '20px'}),
-                    html.P('During discharge, the positive electrode concentration rises. During charge, it falls.'),
+                    html.P('During discharge, the positive electrode concentration rises. During charge, it falls.  The most interesting part of the discharge and charge is right at the beginning - Li is preferentially added or removed from the surface and the concentration gradients grow rapidly.  After a time, they become "pseudo-steady-state", and the entire curve moves upward or downward at a constant rate, with the relative values unchanged.'),
+                    html.P('During charge, the same pattern occurs, but in reverse. However, as the current tapers off, the concentration gradients flatten out, allowing the battery to repeatedly reach the "full" state with only minor internal concentration gradients.'),
                     dcc.Graph(
                         id='spm-pos-graph',
                         figure=pos_internal_fig,

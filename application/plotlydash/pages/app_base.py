@@ -11,13 +11,9 @@ def init_app(server):
                 dbc.themes.BOOTSTRAP,
                 '/static/css/milligram.min.css',
                 '/static/css/style.css',
-            ]
+            ],
+            title='Visualizations'
         )
     dash_app.config.suppress_callback_exceptions = True
-
-    # dash_app.layout = html.Div([
-    #
-    #     html.Div(id='page-content')
-    # ])
 
     return dash_app
