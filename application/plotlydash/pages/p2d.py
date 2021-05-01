@@ -69,7 +69,7 @@ def init_page(app):
             sep_nodes = p2d.initial_parameters['N2'] + 1  # 2 boundary conditions and a base color
 
             # list of "N" colors between "start_color" and "end_color"
-            colorscale_neg = [x.hex for x in list(Color(start_color_neg).range_to(Color(end_color_neg), negative_particles))][::-1]
+            colorscale_neg = [x.hex for x in list(Color(start_color_neg).range_to(Color(end_color_neg), negative_particles))]
             colorscale_pos = [x.hex for x in list(Color(start_color_pos).range_to(Color(end_color_pos), positive_particles))][::-1]
             colorscale_sep = [x.hex for x in list(Color(start_color_sep).range_to(Color(end_color_sep), sep_nodes))][::-1]
 
@@ -148,8 +148,8 @@ def init_page(app):
             internal_pot_fig = make_subplots(specs=[[{"secondary_y": True}]])
             internal_pot_fig.add_trace(go.Scatter(x=data.time, y=positive_potential.T[0], mode='lines', name='Positive Electrode Potential', marker={'color': colorscale_pos[0]}), secondary_y=False)
             internal_pot_fig.add_trace(go.Scatter(x=[data.time[4]], y=[positive_potential.T[0][4]], mode='markers', name='Current PE Potential', marker={'color': colorscale_pos[1], 'size': 10}), secondary_y=False)
-            internal_pot_fig.add_trace(go.Scatter(x=data.time, y=negative_potential.T[0], mode='lines', name='Negative Electrode Potential', marker={'color': colorscale_neg[0]}), secondary_y=True)
-            internal_pot_fig.add_trace(go.Scatter(x=[data.time[4]], y=[negative_potential.T[0][4]], mode='markers', name='Current NE Potential', marker={'color': colorscale_neg[1], 'size': 10}), secondary_y=True)
+            internal_pot_fig.add_trace(go.Scatter(x=data.time, y=negative_potential.T[0], mode='lines', name='Negative Electrode Potential', marker={'color': colorscale_neg[-1]}), secondary_y=True)
+            internal_pot_fig.add_trace(go.Scatter(x=[data.time[4]], y=[negative_potential.T[0][4]], mode='markers', name='Current NE Potential', marker={'color': colorscale_neg[-2], 'size': 10}), secondary_y=True)
             internal_pot_fig.update_layout(
                 margin=dict(l=55, r=20, t=60, b=20),
                 paper_bgcolor="rgb(240, 240, 240)",
