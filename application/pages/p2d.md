@@ -18,88 +18,188 @@ What this means is that the additional complexity compared to the Single Particl
 * Increased accuracy related to electolyte effects (lithium diffusion through electrolyte can be slow)
 * Increased accuracy related to overpotentials at the electrode surface (more accurately captures Solid-Electrolyte Interface growth or Lithium Plating)
 
-### What is Lithium Plating?
+### Why do we care about Overpotentials?
+
+Overpotentials drive a phenomenon known as Lithium Plating.
 
 ![plating_1](/img/p2d/plating_1.jpg)
 
-Lithium plating is the act of Lithium precipitating out of solution (electrolyte) rather than moving nicely into the electrode material (intercalation).  It generally happens when the overpotential, or electrochemical driving force, goes negative at the grapitic electrode.  This can happen during charge, especially during fast charge, right at the CC-CV (constant-current, constant-voltage) knee during the charge cycle.
+Lithium plating is the act of Lithium precipitating out of solution (electrolyte) rather than moving nicely into the 
+electrode material (intercalation).  It generally happens when the overpotential, or electrochemical driving force, 
+goes negative at the grapitic electrode.  This can happen during charge, especially during fast charge, 
+right at the CC-CV (constant-current, constant-voltage) knee during the charge cycle.  In other words,
+the red line below would cause significantly less degradation than the blue line, despite being otherwise
+identical.
 
 ![plating_2](/img/p2d/plating_2.png)
 
-This reaction is irreversible and is one of the main modes of degradation of lithium cells (with the others being related to material stresses caused by swelling during charge / discharge).
+This reaction is irreversible and is one of the main modes of degradation of lithium cells 
+(with the others being related to material stresses caused by swelling during charge / discharge).
 
 ### How Can A Battery Model Help?
 
-By restricting the overpotential during a charge cycle, a properly-fitted battery model can restrict the charging conditions such that the overpotential at the negative electrode never goes negative, which can greatly extend the lifetime of the battery.
+By restricting the overpotential during a charge cycle, a properly-fitted battery model can restrict the charging 
+conditions such that the overpotential at the negative electrode never goes negative, which can greatly extend 
+the lifetime of the battery by preventing the above plating phenomnenon.
 
 ## The Model
 
 The pseudo-two-dimensional model can be split into a few different mechanisms:
 
-#### Mass Transport - Fick's 2nd Law of Diffusion
+#### Solid-Phase Mass Transport - Fick's 2nd Law of Diffusion
+
+This equation describes the way that lithium ions diffuse once inside the particles.  This is a partial differential 
+equation - the left hand side is the derivative with respect to time, and 
+the right hand side is the derivative with respect to space.  This particular formulation captures the 
+spherical nature of the particles.
 
 $$\frac{\partial c_{s}}{\partial t} = \frac{D_s}{r^2}\frac{\partial}{\partial r}(r^2 \frac{\partial c_s}{\partial r})$$  
 
-$$concentration: c_s \; [\frac{mol}{m^2}]$$   
+where concentration \( c_s\) has units \( [\frac{mol}{m^2}]\)  
 
-$$Solid-phase \; diffusion \;  rate: D_s \; [\frac{m^2}{s}]$$
+and Solid-Phase Diffusion rate is \(D_s \) has units  \( [\frac{m^2}{s}]\)
 
-This equation describes the way that lithium ions diffuse once inside the particles.  This is a partial differential equation - the left hand side is the derivative with respect to time, and the right hand side is the derivative with respect to space.  This particular formulation captures the spherical nature of the particles.
+and particle radius \( r \) has units \( m \)
 
-For this set of equations, which exist in both the positive and negative particle, we need one initial condition for time and two boundary conditions for space.  The initial condition is the initial concentration at all r:  
+For this set of equations, which exist in both the positive and negative particle, we need one initial condition 
+for time and two boundary conditions for space.  The initial condition is the initial concentration at all r:  
 $$c_s[0,r] = c_{s, initial}$$
 
-The boundary conditions are Radial Symmetry at the center and the ions either enter or leave the surface based on the current:
+Just like the [Single Particle Model](/articles/spm/), boundary conditions are Radial Symmetry (flux = 0) at the 
+center and the ions either enter or leave the surface based on the current \( J \):
 
 $$\frac{\partial c_s}{\partial r} = 0 @ [t, r=0]$$  
 
-$$\frac{\partial c_s}{\partial r} = \frac{-J}{D_s} @ [t, r=R]$$  
+$$\frac{\partial c_s}{\partial r} = \frac{-J}{D_sa_il_i} @ [t, r=R]$$  
 
-where J is the ionic current, or the rate at which Li ions are entering or leaving the particle.
+where \( J \) is the ionic current, or the rate at which Li ions are entering or leaving the particle, and has units \(\frac{mol}{s}\)
 
-The current is dictated by Butler-Volmer kinetics, which relate the potential to the current.  This can be thought of as one element of a battery's 'resistance' - in order to move electrons, there has to be a voltage drop.  This really describes how the amount of current that flows relates to the difference between the circuit voltage and the battery's open circuit potential (U).  This is what gives a battery discharge curve its shape and dictates the voltage window of the battery.
+and \(a_i\) is the surface area per unit volume of electrode \(i\), which is different for the positive and negative electrodes, and has units \(\frac{m^2}{m^3}\)
 
-$$j = kc_{s,max}c^{0.5}_{e}(1-x_{surf})^{0.5}x_{surf}^{0.5}[exp(\frac{0.5 F}{RT}\eta)-exp(-\frac{0.5 F}{RT}\eta)]$$
-
-$$\eta = \phi(x_{surf})-U$$
+and \(l_i\) is the electrode thickness and has units \(m\)
 
 This set of equations is replicated for each simulated particle, which are treated mathematically as discrete entities whose only interaction is through the varying concentration / potential gradients present in the electrolyte.
 
-#### Electonic Conduction
+#### Solid-Phase Electonic Conduction
 
-$$\sigma _{eff, p} \frac{\partial ^2 \Phi_1}{\partial x^2} = a_pFj_p$$
+This equation governs the solid-phase potential across the electrodes, which contributes to the behavior as a function
+of the depth of the electrode.
 
-\(\Phi_1\) is the solid-phase potential
+$$\sigma _{eff, i} \frac{\partial ^2 \Phi_1}{\partial x^2} = a_pFj_i$$
 
-#### Charge Balance
+where \( \sigma_{eff, i} \) is the electronic conductivity of the electrode material and has units \( \frac{S}{m} \),
 
-$$-\sigma _{eff, p} \frac{\partial  \Phi_1}{\partial x} -\kappa_{eff, p} \frac{\partial \Phi_2}{\partial x} + \frac{2 \kappa_{eff, p}RT}{F}(1-t_+)\frac{\partial \ln c}{\partial x} = I$$
+and \(\Phi_1\) is the solid-phase potential and has units \( V \),
 
-\(\Phi_2\) is the liquid phase potential
+and \(x\) is the distance across the cell and has units \( m \),
 
-#### Material Balance (back to Fick's Law)
+and \(a_i\) is the surface area per unit volume of electrode \(i\), which is different for the positive and negative electrodes, and has units \(\frac{m^2}{m^3}\),
 
-$$-\epsilon _{p} \frac{\partial  c}{\partial x} = -D_{eff, p} \frac{\partial ^2 c}{\partial x^2} + a_p(1-t_+)j_p$$
+and \( j_i \) is the anodic or cathodic current density and has units \( \frac{mol}{m^2s} \),
 
-\(c\) is the electrolyte concentration
+and \( F \) is Faraday's Constant and is approximately \( 96485 \frac{C}{mol} \).
+
+
+#### Electrolyte Charge Balance
+
+This equation governs liquid potential, which also contributes to the behavior as a function of electrode depth.
+
+$$-\sigma _{eff, i} \frac{\partial  \Phi_1}{\partial x} -\kappa_{eff, i} \frac{\partial \Phi_2}{\partial x} + \frac{2 \kappa_{eff, i}RT}{F}(1-t_+)\frac{\partial \ln c_e}{\partial x} = I$$
+
+where \( \sigma_{eff, i} \) is the electronic conductivity of the electrode material and has units \( \frac{S}{m} \),
+
+and \(\Phi_1\) is the solid-phase potential and has units \( V \),
+
+and \(\Phi_2\) is the liquid phase potential and has units \( V \)
+
+and \(x\) is the distance across the cell and has units \( m \),
+
+and \( \kappa _{eff, i} \) is the effective reaction rate and has units \( \frac{m^{2.5}}{mol^{0.5}s} \),
+
+and \( F \) is Faraday's Constant and is approximately \( 96485 \frac{C}{mol} \),
+
+and \( R \) is the Universal Gas Constant and is approximately \( 8.3145 \frac{J}{mol K} \),
+
+and \( t_+ \) is the Transference Number, which for Lithium is approximately  \( 0.363 \),
+
+and \( T \) is the temperature, which has units \( K \),
+
+and \( c_e \) is the electrolyte concentration and has units \( \frac{mol}{m^3} \). In this model, this concentration
+changes.  When electrolite Li diffusion is slow, it can be the limiting factor in cell performance.
+
+#### Electrolyte Material Balance (back to Fick's Law)
+
+This equation governs the Li transport in the electrolyte phase, which tracks how Li particles move from cathode to
+anode and vice-versa.
+
+$$-\epsilon _{i} \frac{\partial  c_e}{\partial x} = -D_{eff, i} \frac{\partial ^2 c_e}{\partial x^2} + a_i(1-t_+)j_i$$
+
+where \( \epsilon_i \) is the volume fraction of that region (positive, separator, negative) that is electrolyte and has units \( \frac{m^3}{m^3} \),
+
+and \( c_e \) is the electrolyte concentration and has units \( \frac{mol}{m^3} \)
+
+and \(x\) is the distance across the cell and has units \( m \),
+
+and \( D_{eff, i} \) is the effective diffusion rate for that region and has units \( \frac{cm^2}{s} \),
+
+and \( a_i \) is the electrode area per unit volume in that region (positive, negative) and has units \( \frac{m^2}{m^3} \),
+
+and \( t_+ \) is the Transference Number, which for Lithium is approximately  \( 0.363 \),
+
+and \( j_i \) is the anodic or cathodic current density and has units \( \frac{mol}{m^2s} \).
 
 #### Other expressions
 
-##### Effective (read: Experimentally Fitted) Reaction Rate
+##### Effective Reaction Rate
 
-$$\kappa _{eff,p} = \epsilon_p^{brugg}\kappa = 0.01775(4.1253 E^{-2}+5.007 E^{-1}c-4.7212 E^{-1}c^2 +1.5094 E^{-1}c^3-1.6018 E^{-2}c^4)$$
+This expression describes the relative reaction rate based on pore tortuosity
 
-\(\kappa\) is the given reaction rate
+$$\kappa _{eff,i} = \epsilon_i^{brugg_I}\kappa_i$$
 
-\(brugg\) is the bruggman coefficient - it captures the tortuosity associated with the pores in the electrode
+where \(\kappa_i\) is the given reaction rate in that region (positive, negative) and has units \( \frac{m^{2.5}}{mol^{0.5}s} \)
 
-\(\epsilon\) is the volume fraction of the electrode that is porous
+and \(brugg_i\) is the bruggman coefficient - it captures the tortuosity associated with the pores in the electrode and is unitless.
+
+and \( \epsilon_i \) is the volume fraction of that region (positive, separator, negative) that is electrolyte and has units \( \frac{m^3}{m^3} \)
 
 ##### Butler-Volmer Kinetics at Each Electrode
 
-$$j_p = 2\kappa_p(c_{s, max,p}-c^s_p)^{0.5}c^{s0.5}_pc^{0.5}sinh(\frac{0.5F}{RT}(\Phi_1-\Phi_2-U_p))$$
+The current is dictated by Butler-Volmer kinetics, which relate the potential and reaction rate to the current.  This 
+can be thought of as one element of a battery's 'resistance' - in order to move electrons, there has to be a 
+voltage drop.  This really describes how the amount of current that flows relates to the difference between 
+the external voltage and the battery's Open Circuit Potential (U).  The Open Circuit Potential is what gives a 
+battery discharge curve its shape and really dictates the voltage window of the battery.
 
-\(U_p\) is a fitted relationship between the open-circuit potential and the degree of lithiation of each electrode - this is a material property that is generally measured experimentally.
+![butler-volmer](/img/spm/butler-volmer.png#center)
+
+Above, the total current \(j\) is described in terms of the sum of the anode current \(j_a\) and the cathode current \(j_c\).
+This equation captures the nonlinear relationship between a voltage perturbation and the resulting battery current.
+
+$$j_i = 2\kappa_{eff,i}(c_{s, max,i}-c^s_i)^{0.5}c^{s0.5}_ic^{0.5}sinh(\frac{0.5F}{RT}(\eta_i))$$
+
+$$\eta_i = \Phi_1-\Phi_2-U_i$$
+
+
+where \( j_i \) is the anodic or cathodic current density and has units \( \frac{mol}{m^2s} \),
+
+and \( k_{eff,i} \) is the effective reaction rate for that electrode and has units \( \frac{m^{2.5}}{mol^{0.5}s} \)
+
+and \( c_{i} \) is the lithium concentration at the particle surface and has units \( \frac{mol/m^3}\),
+
+and \( c_{s,max,i} \) is the solid maximum lithium concentration and has units \( \frac{mol}{m^3} \),
+
+and \( F \) is Faraday's Constant and is approximately \( 96485 \frac{C}{mol} \),
+
+and \( R \) is the Universal Gas Constant and is approximately \( 8.3145 \frac{J}{mol K} \),
+
+and \( T \) is the temperature, which has units \( K \),
+
+and \( c_e \) is the electrolyte concentration and has units \( \frac{mol}{m^3} \).
+
+\( sinh(x) \) is a practical approximation to \( 0.5 * e^{+ix} - e^{-ix} \)
+
+\(U_i\) is a fitted relationship between the open-circuit potential and the degree of lithiation of each electrode 
+- this is a material property that is generally measured experimentally.
 
 ### The Path of A Lithium Particle
 
