@@ -17,7 +17,8 @@ def init_page(app):
     layout = html.Div([
         html.H1('Single Particle Model'),
         html.Div([], style={'height': '30px'}),
-        html.A('A model walkthrough is available for the Single Particle Model', href='/articles/spm/'),
+        dcc.Markdown(
+            children='A model walkthrough is available for the [SPM Model](/articles/spm/), and the code that powers this interactive page is available in the python package [Ampere](/articles/ampere/)'),
         html.Div([], style={'height': '30px'}),
         html.Img(src='/img/spm/spm_3d.png'),
         html.Div([], style={'height': '30px'}),

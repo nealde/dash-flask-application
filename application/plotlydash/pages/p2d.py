@@ -17,13 +17,13 @@ def init_page(app):
     layout = html.Div([
         html.H1('Pseudo Two-Dimensional Model'),
         html.Div([], style={'height': '30px'}),
-        html.A('A model walkthrough is available for the P2D Model', href='/articles/p2d/'),
+        dcc.Markdown(children='A model walkthrough is available for the [P2D Model](/articles/p2d/), and the code that powers this interactive page is available in the python package [Ampere](/articles/ampere/)'),
         html.Div([], style={'height': '30px'}),
         html.Img(src='/img/p2d/p2d_3d.png'),
         html.Div([], style={'height': '30px'}),
         html.P('Select a current for the simulation below.'),
-        dcc.Slider(id='p2d-current', min=-10, max=10, value=4, step=0.1, updatemode='drag',
-                   marks={i: f'{i} amps' for i in range(-10, 12, 2)}),
+        dcc.Slider(id='p2d-current', min=-8, max=10, value=4, step=0.1, updatemode='drag',
+                   marks={i: f'{i} amps' for i in range(-8, 12, 2)}),
         html.Div([], style={'height': '30px'}),
         dbc.Button('Run Simulation', id='p2d-start-button'),
 
@@ -41,7 +41,7 @@ def init_page(app):
                   [State('p2d-current', 'value')])
     def p2d_callback(n_clicks, amps):
         if amps != 0:
-            p2d = PseudoTwoDimFD(initial_parameters={'Nr1': 9, 'Nr2': 9, 'N1': 11, 'N3': 11, 'ln': 40e-6, 'Dsp': 3.5e-13})
+            p2d = PseudoTwoDimFD(initial_parameters={'Nr1': 7, 'Nr2': 7, 'N1': 11, 'N3': 11, 'lp': 50e-6, 'Dsp': 3.5e-13})
             # run simulation with internal variables
             if amps > 0:
                 amps = max(amps, 0.2)
