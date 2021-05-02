@@ -63,7 +63,7 @@ spm.fit([t_exp], [v_exp], currents=[0.5], maxiter=1000, tol=1e-7)
 | Initial | Rp        | Positive particle radius (m)     | 1.5e-6         |
 | Initial | lp        | Positive electrode thickness (m) | 85e-6          |
 | Target  | Rp        | Positive particle radius (m)     | 2e-06          |
-| Target  | lp        | Positive electrode thickness (m) | 80e-5          |
+| Target  | lp        | Positive electrode thickness (m) | 80e-6          |
 
 ![initial](/img/battery/initial.png)
 
