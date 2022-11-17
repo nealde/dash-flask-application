@@ -17,6 +17,7 @@ def init_app():
     app = Flask(__name__, instance_relative_config=False)
     app.config.from_object("config")
     app.config["FLATPAGES_HTML_RENDERER"] = my_markdown
+
     assets = Environment()
     assets.init_app(app)
 
